@@ -1,0 +1,1126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A Little Book About Our Tissue</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600;700&family=Permanent+Marker&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Special+Elite&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --paper:        #f2e8d5;
+    --paper-2:      #f5e3d8;
+    --paper-dark:   #ddcda6;
+    --paper-shadow: #b9a179;
+    --ink:          #3b2e22;
+    --ink-soft:     #6c5a44;
+    --rose:         #e0637f;
+    --rose-deep:    #c23d5c;
+    --sage:         #5fa06a;
+    --sky:          #3f9fcf;
+    --mustard:      #f0ac1f;
+    --kraft:        #d97e3d;
+    --coral:        #f0704a;
+    --plum:         #9757b0;
+    --teal:         #2f9e93;
+    --white-photo:  #fdfbf4;
+    --shadow-soft:  0 10px 24px rgba(59,46,34,.18);
+    --shadow-deep:  0 18px 40px rgba(59,46,34,.30);
+  }
+
+  *{ box-sizing:border-box; }
+  html,body{ height:100%; }
+  body{
+    margin:0;
+    background:
+      radial-gradient(ellipse at top left, rgba(224,99,127,.16) 0%, transparent 55%),
+      radial-gradient(ellipse at bottom right, rgba(63,159,207,.16) 0%, transparent 55%),
+      radial-gradient(ellipse at bottom left, rgba(240,172,31,.14) 0%, transparent 50%),
+      var(--paper-2);
+    background-attachment:fixed;
+    color:var(--ink);
+    font-family:'Cormorant Garamond', serif;
+    overflow-x:hidden;
+    -webkit-font-smoothing:antialiased;
+  }
+  body::before{
+    /* paper grain */
+    content:"";
+    position:fixed; inset:0;
+    pointer-events:none;
+    opacity:.5;
+    background-image:
+      radial-gradient(rgba(59,46,34,.045) 1px, transparent 1px),
+      radial-gradient(rgba(59,46,34,.035) 1px, transparent 1px);
+    background-size: 3px 3px, 7px 7px;
+    background-position: 0 0, 2px 3px;
+    z-index:0;
+  }
+
+  h1,h2,h3{ font-family:'Caveat', cursive; font-weight:700; margin:0; }
+  .script{ font-family:'Caveat', cursive; }
+  .typewriter-font{ font-family:'Special Elite', monospace; }
+
+  a{ color:inherit; }
+  button{ font-family:inherit; cursor:pointer; }
+
+  /* ---------- torn paper edge ---------- */
+  .torn{
+    clip-path: polygon(
+      0% 2%,4% 0%,9% 3%,14% 0%,19% 2.5%,24% 0%,29% 3%,34% 0%,39% 2%,44% 0%,49% 3%,54% 0%,59% 2%,64% 0%,69% 3%,74% 0%,79% 2%,84% 0%,89% 3%,94% 0%,100% 2%,
+      100% 98%,96% 100%,91% 97%,86% 100%,81% 98%,76% 100%,71% 97%,66% 100%,61% 98%,56% 100%,51% 97%,46% 100%,41% 98%,36% 100%,31% 97%,26% 100%,21% 98%,16% 100%,11% 97%,6% 100%,0% 98%
+    );
+  }
+
+  /* ---------- washi tape ---------- */
+  .washi{
+    position:absolute;
+    width:100px; height:30px;
+    opacity:.88;
+    box-shadow:0 2px 4px rgba(0,0,0,.18);
+    z-index:5;
+  }
+  .washi::after{
+    content:"";
+    position:absolute; inset:0;
+    background:repeating-linear-gradient(115deg, rgba(255,255,255,.35) 0 4px, transparent 4px 9px);
+  }
+  .washi-sage{ background:var(--sage); }
+  .washi-sky{ background:var(--sky); }
+  .washi-mustard{ background:var(--mustard); }
+  .washi-rose{ background:var(--rose); }
+  .washi-coral{ background:var(--coral); }
+  .washi-plum{ background:var(--plum); }
+  .washi-teal{ background:var(--teal); }
+
+  /* ---------- book shell ---------- */
+  .book-wrap{
+    position:relative;
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:90px 20px 130px;
+    z-index:1;
+  }
+  .book{
+    position:relative;
+    width:100%;
+    max-width:900px;
+    perspective:1800px;
+  }
+  .book::before{
+    content:"";
+    position:absolute;
+    left:-7px; top:14px; bottom:14px;
+    width:16px;
+    background:repeating-linear-gradient(to right, var(--paper) 0 2px, var(--paper-dark) 2px 3px, var(--paper-2) 3px 4px);
+    border-radius:3px 0 0 3px;
+    box-shadow:-3px 0 8px rgba(59,46,34,.22), inset -1px 0 2px rgba(59,46,34,.15);
+    z-index:0;
+  }
+  .page{
+    display:none;
+    background:var(--paper);
+    border-radius:3px;
+    box-shadow:var(--shadow-deep);
+    padding:52px 56px 60px;
+    position:relative;
+    min-height:560px;
+    transform-origin:left center;
+    z-index:1;
+  }
+  .page.active{ display:block; animation:settle .55s ease; }
+  .page.leaving-next{ animation:turnOutNext .45s ease forwards; }
+  .page.leaving-prev{ animation:turnOutPrev .45s ease forwards; }
+  .page.entering-next{ animation:turnInNext .5s ease forwards; }
+  .page.entering-prev{ animation:turnInPrev .5s ease forwards; }
+
+  /* corner fold, like a page that's been turned before */
+  .page::after{
+    content:"";
+    position:absolute;
+    top:0; right:0;
+    width:0; height:0;
+    border-style:solid;
+    border-width:0 30px 30px 0;
+    border-color:transparent var(--paper-dark) transparent transparent;
+    box-shadow:-2px 2px 5px rgba(59,46,34,.18);
+    opacity:.75;
+    z-index:2;
+    pointer-events:none;
+  }
+
+  @keyframes settle{ from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:translateY(0);} }
+  @keyframes turnOutNext{ to{ transform:rotateY(-18deg) translateX(-30px); opacity:0; } }
+  @keyframes turnOutPrev{ to{ transform:rotateY(18deg) translateX(30px); opacity:0; } }
+  @keyframes turnInNext{ from{ transform:rotateY(18deg) translateX(30px); opacity:0;} to{ transform:rotateY(0) translateX(0); opacity:1; } }
+  @keyframes turnInPrev{ from{ transform:rotateY(-18deg) translateX(-30px); opacity:0;} to{ transform:rotateY(0) translateX(0); opacity:1; } }
+
+  .eyebrow{
+    font-family:'Permanent Marker', cursive;
+    font-size:.8rem;
+    letter-spacing:.14em;
+    color:var(--rose-deep);
+    text-transform:uppercase;
+    display:inline-block;
+    margin-bottom:6px;
+    transform:rotate(-2deg);
+  }
+  .chapter-title{
+    font-size:clamp(2.1rem, 4.2vw, 3.1rem);
+    color:var(--ink);
+    line-height:1.05;
+    margin-bottom:28px;
+    position:relative;
+  }
+  .chapter-title::after{
+    content:"";
+    display:block;
+    width:132px; height:14px;
+    margin-top:8px;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='132' height='14'><path d='M2 8 Q 14 1, 26 8 T 50 8 T 74 8 T 98 8 T 122 8' stroke='%23b06774' stroke-width='2.6' fill='none' stroke-linecap='round'/></svg>");
+    background-repeat:no-repeat;
+    opacity:.65;
+    transform:rotate(-1deg);
+  }
+
+  .lede{ font-size:1.35rem; line-height:1.75; max-width:60ch; }
+  .lede p{ margin:0 0 1.1em; }
+  .lede em{ color:var(--rose-deep); font-style:italic; }
+  .small-note{ font-family:'Caveat',cursive; font-size:1.15rem; color:var(--ink-soft); }
+
+  /* ---------- corner deco ---------- */
+  .corner-heart{
+    position:absolute; bottom:22px; right:26px;
+    font-family:'Caveat', cursive; font-size:1.6rem;
+    color:var(--rose-deep); opacity:.55; transform:rotate(-6deg);
+  }
+
+  /* ---------- photo placeholder ---------- */
+  .ph-inner{
+    width:100%; height:100%;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:8px;
+    background:
+      repeating-linear-gradient(45deg, #efe6d1 0 10px, #e6d9b9 10px 20px);
+    border:2px dashed var(--paper-shadow);
+    color:var(--ink-soft);
+    text-align:center;
+    padding:10px;
+  }
+  .ph-inner .cam{ width:34px; height:34px; opacity:.55; }
+  .ph-inner p{ font-family:'Caveat',cursive; font-size:1.05rem; margin:0; line-height:1.25; }
+
+  /* ---------- polaroid ---------- */
+  .polaroid{
+    background:var(--white-photo);
+    padding:12px 12px 40px;
+    box-shadow:var(--shadow-soft);
+    display:inline-block;
+    cursor:zoom-in;
+    transition:transform .25s ease, box-shadow .25s ease;
+    position:relative;
+  }
+  .polaroid:hover{ transform:translateY(-6px) scale(1.02); box-shadow:var(--shadow-deep); }
+  .polaroid .frame{ width:210px; height:210px; }
+  .polaroid figcaption{
+    font-family:'Caveat',cursive; font-size:1.15rem; text-align:center;
+    margin-top:10px; color:var(--ink-soft);
+    transform:rotate(-1deg);
+    position:relative;
+  }
+  .polaroid figcaption::before{
+    content:"— ";
+    opacity:.6;
+  }
+
+  /* a strip of tape holding the photo onto the page, used sparingly */
+  .polaroid.taped{ margin-top:14px; }
+  .polaroid.taped::before{
+    content:"";
+    position:absolute;
+    top:-16px; left:50%;
+    width:76px; height:26px;
+    background:var(--mustard);
+    opacity:.82;
+    transform:translateX(-50%) rotate(-3deg);
+    box-shadow:0 2px 5px rgba(0,0,0,.15);
+    z-index:3;
+  }
+  .polaroid.taped::after{
+    content:"";
+    position:absolute;
+    top:-16px; left:50%;
+    width:76px; height:26px;
+    transform:translateX(-50%) rotate(-3deg);
+    background:repeating-linear-gradient(115deg, rgba(255,255,255,.35) 0 4px, transparent 4px 9px);
+    z-index:4;
+  }
+  .polaroid.taped.tape-rose::before{ background:var(--rose); }
+  .polaroid.taped.tape-sky::before{ background:var(--sky); }
+  .polaroid.taped.tape-sage::before{ background:var(--sage); }
+
+  /* page number, stamped like a corner note in a real notebook */
+  .page-num{
+    position:absolute;
+    bottom:18px; left:26px;
+    font-family:'Caveat',cursive;
+    font-size:1rem;
+    color:var(--ink-soft);
+    opacity:.55;
+    transform:rotate(-3deg);
+  }
+
+  /* subtle alternating paper stock, as if pages were added over time */
+  .page[data-index="2"], .page[data-index="8"]{
+    background:
+      radial-gradient(ellipse at top right, rgba(63,159,207,.12) 0%, transparent 60%),
+      var(--paper-2);
+  }
+  .page[data-index="5"], .page[data-index="11"]{
+    background:
+      radial-gradient(ellipse at bottom left, rgba(95,160,106,.13) 0%, transparent 60%),
+      var(--paper-2);
+  }
+  .page[data-index="3"], .page[data-index="9"]{
+    background:
+      radial-gradient(ellipse at top left, rgba(240,172,31,.14) 0%, transparent 60%),
+      #f5e9c8;
+  }
+  .page[data-index="6"], .page[data-index="12"]{
+    background:
+      radial-gradient(ellipse at bottom right, rgba(151,87,176,.10) 0%, transparent 60%),
+      #f5e9c8;
+  }
+
+  /* lightbox */
+  .lightbox{
+    position:fixed; inset:0; background:rgba(30,22,14,.72);
+    display:none; align-items:center; justify-content:center; z-index:200;
+    padding:30px;
+  }
+  .lightbox.open{ display:flex; }
+  .lightbox .polaroid{ cursor:zoom-out; transform:scale(1); }
+  .lightbox .polaroid .frame{ width:min(70vw,420px); height:min(70vw,420px); }
+
+  /* ---------- sticky note ---------- */
+  .sticky{
+    background:var(--mustard);
+    padding:20px 18px;
+    width:220px;
+    box-shadow:3px 6px 12px rgba(0,0,0,.22);
+    font-family:'Caveat',cursive;
+    font-size:1.2rem;
+    line-height:1.35;
+    cursor:pointer;
+    position:relative;
+    transition:transform .25s ease;
+  }
+  .sticky:hover{ transform:translateY(-4px) rotate(0deg) !important; }
+  .sticky .full{ display:none; }
+  .sticky.open .peek{ display:none; }
+  .sticky.open .full{ display:block; }
+  .sticky .tap-hint{ font-family:'Cormorant Garamond',serif; font-size:.78rem; opacity:.6; margin-top:8px; display:block; }
+
+  /* ---------- envelope ---------- */
+  .envelope-wrap{ display:flex; justify-content:center; margin:26px 0 10px; }
+  .envelope{
+    position:relative;
+    width:min(100%, 420px);
+    height:230px;
+    cursor:pointer;
+  }
+  .envelope .body{
+    position:absolute; inset:0;
+    background:var(--kraft);
+    box-shadow:var(--shadow-soft);
+  }
+  .envelope .flap{
+    position:absolute; top:0; left:0; right:0; height:118px;
+    background:#9c7a55;
+    clip-path:polygon(0 0,100% 0,50% 100%);
+    transform-origin:top;
+    transition:transform .5s ease;
+    z-index:3;
+  }
+  .envelope.open .flap{ transform:rotateX(180deg); }
+  .envelope .seal{
+    position:absolute; top:74px; left:50%; transform:translateX(-50%);
+    width:46px; height:46px; border-radius:50%;
+    background:var(--rose-deep); color:#f3e6d8;
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Caveat',cursive; font-size:1.4rem; z-index:4;
+    box-shadow:0 2px 6px rgba(0,0,0,.3);
+  }
+  .envelope .label{
+    position:absolute; bottom:16px; left:0; right:0; text-align:center;
+    font-family:'Caveat',cursive; color:#f3e6d8; font-size:1.15rem; z-index:2;
+  }
+  .letter{
+    display:none;
+    margin-top:22px;
+    background:var(--white-photo);
+    border-left:4px solid var(--rose);
+    padding:34px 30px;
+    box-shadow:var(--shadow-soft);
+    max-width:560px; margin-left:auto; margin-right:auto;
+    transform:rotate(-.6deg);
+  }
+  .letter.show{ display:block; animation:settle .5s ease; }
+  .letter p{ font-size:1.28rem; line-height:1.8; margin:0 0 1em; }
+  .letter .greet{ font-family:'Caveat',cursive; font-size:1.9rem; color:var(--rose-deep); }
+
+  /* ---------- gift list ---------- */
+  .gift-list{ list-style:none; padding:0; margin:24px 0 0; display:grid; gap:14px; }
+  .gift-list li{
+    background:var(--paper);
+    border-left:4px solid var(--rose);
+    padding:14px 18px;
+    font-size:1.2rem;
+    box-shadow:0 4px 10px rgba(0,0,0,.10);
+    transform:rotate(-.4deg);
+  }
+  .gift-list li:nth-child(even){ transform:rotate(.4deg); border-left-color:var(--sage); }
+  .gift-list li:nth-child(3n){ border-left-color:var(--sky); }
+  .gift-list li:nth-child(5n){ border-left-color:var(--mustard); }
+
+  /* ---------- bonus / friend messages ---------- */
+  .friend-grid{
+    display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:22px; margin-top:26px;
+  }
+  .friend-card{
+    background:var(--paper);
+    border:1px solid var(--paper-shadow);
+    border-top:4px solid var(--mustard);
+    padding:18px;
+    min-height:130px;
+    box-shadow:var(--shadow-soft);
+    font-family:'Caveat',cursive; font-size:1.15rem;
+    position:relative;
+  }
+  .friend-card .who{
+    font-family:'Permanent Marker',cursive; font-size:.7rem;
+    color:var(--rose-deep); text-transform:uppercase; letter-spacing:.08em;
+    margin-bottom:8px; display:block;
+  }
+
+  .testimony-card{
+    background:var(--paper);
+    border:1px solid var(--paper-shadow);
+    border-top:4px solid var(--teal);
+    padding:30px 28px;
+    box-shadow:var(--shadow-soft);
+    max-width:620px;
+    margin:26px auto 0;
+    transform:rotate(-.5deg);
+    position:relative;
+  }
+  .testimony-card .who{
+    font-family:'Permanent Marker',cursive; font-size:.72rem;
+    color:var(--rose-deep); text-transform:uppercase; letter-spacing:.08em;
+    display:block; margin-bottom:16px;
+  }
+  .testimony-list{
+    font-family:'Caveat',cursive; font-size:1.4rem; line-height:1.65;
+    padding-left:24px; margin:0;
+  }
+  .testimony-list li{ margin-bottom:9px; }
+  .testimony-list li.callback{ color:var(--rose-deep); font-weight:600; }
+
+  /* ---------- brosdk sticker ---------- */
+  .sticker{
+    display:inline-block;
+    font-family:'Permanent Marker',cursive;
+    background:linear-gradient(120deg, var(--plum), var(--rose-deep)); color:#f4e7da;
+    padding:10px 18px; border-radius:50% / 46%;
+    transform:rotate(-8deg);
+    box-shadow:var(--shadow-soft);
+    font-size:1.1rem;
+    margin:16px 0;
+  }
+
+  /* ---------- cover ---------- */
+  .cover{ text-align:center; padding:70px 40px; }
+  .cover .ribbon{
+    width:64px;height:64px;margin:0 auto 22px;
+    background:linear-gradient(135deg, var(--rose-deep), var(--coral)); border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    color:#f4e6d8; font-family:'Caveat',cursive; font-size:1.5rem;
+    box-shadow:var(--shadow-soft);
+    animation:pulse 2.4s ease-in-out infinite;
+  }
+  @keyframes pulse{ 0%,100%{ transform:scale(1);} 50%{ transform:scale(1.06);} }
+  .cover h1{ font-size:clamp(2.4rem,6vw,4rem); margin-bottom:10px; }
+  .cover .sub{ font-family:'Cormorant Garamond',serif; font-style:italic; color:var(--ink-soft); font-size:1.3rem; }
+  .cover .open-btn{
+    margin-top:36px;
+    background:linear-gradient(120deg, var(--rose), var(--coral)); color:#fff8ee;
+    border:none; padding:14px 30px;
+    font-family:'Caveat',cursive; font-size:1.3rem;
+    box-shadow:var(--shadow-soft);
+    transition:transform .2s ease;
+  }
+  .cover .open-btn:hover{ transform:translateY(-3px); }
+
+  /* little hand-tied gift tag on the cover */
+  .gift-tag{
+    display:inline-block;
+    background:var(--kraft);
+    color:#fdf6e8;
+    font-family:'Caveat',cursive;
+    font-size:1.05rem;
+    padding:8px 16px 8px 22px;
+    margin-bottom:18px;
+    position:relative;
+    transform:rotate(-4deg);
+    box-shadow:var(--shadow-soft);
+    clip-path:polygon(14px 0,100% 0,100% 100%,14px 100%,0 50%);
+  }
+  .gift-tag::after{
+    content:"";
+    position:absolute; left:22px; top:50%; transform:translateY(-50%);
+    width:6px; height:6px; border-radius:50%;
+    background:#fdf6e8;
+  }
+
+  /* ---------- typewriter cursor ---------- */
+  .tw{ border-right:2px solid var(--ink); padding-right:2px; }
+  .tw.done{ border-right:none; }
+
+  /* ---------- nav controls ---------- */
+  .controls{
+    position:fixed; left:0; right:0; bottom:0;
+    display:flex; align-items:center; justify-content:center; gap:18px;
+    padding:16px 14px 20px;
+    background:linear-gradient(to top, rgba(234,221,192,.96), rgba(234,221,192,0));
+    z-index:50;
+  }
+  .nav-btn{
+    background:var(--paper); border:1px solid var(--paper-shadow);
+    width:44px;height:44px;border-radius:50%;
+    font-size:1.3rem; color:var(--ink);
+    box-shadow:var(--shadow-soft);
+    display:flex; align-items:center; justify-content:center;
+    transition:transform .2s ease;
+  }
+  .nav-btn:hover{ transform:translateY(-2px); }
+  .nav-btn:disabled{ opacity:.3; cursor:default; transform:none; }
+  .dots{
+    display:flex; gap:7px; flex-wrap:wrap; max-width:340px; justify-content:center;
+    position:relative;
+  }
+  .dots::before{
+    content:"";
+    position:absolute; left:6px; right:6px; top:50%;
+    height:1px;
+    background:repeating-linear-gradient(to right, var(--paper-shadow) 0 4px, transparent 4px 8px);
+    transform:translateY(-50%);
+    z-index:-1;
+  }
+  .dot{
+    width:11px;height:11px;border-radius:50%;
+    background:var(--paper-shadow); border:none; padding:0;
+    transition:transform .2s ease, background .2s ease;
+  }
+  .dot.active{ background:var(--rose-deep); transform:scale(1.3); }
+
+  /* ---------- confetti ---------- */
+  .confetti-piece{
+    position:fixed; top:-20px; z-index:150; pointer-events:none;
+    animation:fall linear forwards;
+  }
+  @keyframes fall{
+    to{ transform:translateY(105vh) rotate(540deg); opacity:.9; }
+  }
+
+  /* ---------- responsive ---------- */
+  @media (max-width:640px){
+    .page{ padding:34px 22px 44px; min-height:auto; }
+    .book-wrap{ padding:60px 12px 120px; }
+    .lede{ font-size:1.18rem; }
+    .washi{ width:70px; height:22px; }
+    .polaroid .frame{ width:150px; height:150px; }
+    .lightbox .polaroid .frame{ width:78vw; height:78vw; }
+    .book::before{ width:9px; left:-4px; }
+    .page::after{ border-width:0 20px 20px 0; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration:.01ms !important; animation-iteration-count:1 !important; transition-duration:.01ms !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="book-wrap">
+  <div class="book" id="book">
+
+    <!-- ============ PAGE 0 : COVER ============ -->
+    <section class="page active" data-index="0">
+      <div class="washi washi-sky" style="top:-10px;left:40px;transform:rotate(-8deg);"></div>
+      <div class="washi washi-mustard" style="top:-10px;right:50px;transform:rotate(7deg);"></div>
+      <div class="washi washi-plum" style="top:-10px;left:50%;transform:translateX(-50%) rotate(2deg); width:60px;"></div>
+      <div class="cover">
+        <div class="ribbon">❤</div>
+        <span class="gift-tag">for the softest, most Tissue-y Tissue we know</span>
+        <br>
+        <span class="eyebrow">A very late, very handmade gift</span>
+        <h1 id="titleWord">A Little Book About Our Tissue</h1>
+        <p class="sub">a digital scrapbook, made with 11:30 PM guilt and a lot of love</p>
+        <button class="open-btn" id="openBookBtn">open the book →</button>
+      </div>
+      <div id="easterEggNote" class="small-note" style="text-align:center;margin-top:18px;opacity:0;transition:opacity .4s ease;">psst — you found nothing yet. keep clicking, or just turn the page. 🤭</div>
+    </section>
+
+    <!-- ============ PAGE 1 : CH.01 BEFORE ANYTHING ELSE ============ -->
+    <section class="page" data-index="1">
+      <div class="washi washi-rose" style="top:-12px;left:60px;transform:rotate(-5deg);"></div>
+      <span class="eyebrow">Chapter 01</span>
+      <h2 class="chapter-title">Before Anything Else</h2>
+      <div class="lede">
+        <p class="tw-target script" data-text="11:30 PM. Your birthday. And my crime." style="font-size:1.7rem;"></p>
+        <p><strong>I forgot.</strong></p>
+        <p>Before anything else, Tissue, I want to say I'm sorry.</p>
+        <p>I won't make excuses for forgetting your birthday. You deserved to be wished the moment your day began, and I am genuinely sorry that I missed it.</p>
+        <p>Of all the people to forget, it had to be you &mdash; the eldest daughter of this strange little family of five we've somehow built out of nothing but friendship and bad decisions.</p>
+        <p>But since I have already managed to become the world's most guilty friend&hellip;</p>
+        <p><em>I decided to make you something instead.</em></p>
+        <p>So, welcome to a very late, slightly chaotic, but very heartfelt little scrapbook about you.</p>
+        <p>That's you below, standing under a banner someone else strung up for you, glowing like you always do in photos &mdash; completely unaware that a few hours later, on the other side of the day, I'd still be here, guilty and scrambling to make this instead.</p>
+      </div>
+      <div style="display:flex; justify-content:center; margin-top:22px;">
+        <figure class="polaroid taped tape-mustard" style="transform:rotate(-3deg);" data-lightbox>
+          <div class="frame"><img src="images/birthday-banner.jpg" alt="Tissue standing under a HAPPY BIRTHDAY banner" style="width:100%;height:100%;object-fit:cover;"></div>
+          <figcaption>the banner knew before I did</figcaption>
+        </figure>
+      </div>
+      <p class="small-note" style="text-align:center; margin-top:20px;">Now turn the page. →</p>
+    </section>
+
+    <!-- ============ PAGE 2 : CH.02 ONCE UPON A TIME ============ -->
+    <section class="page" data-index="2">
+      <div class="washi washi-sage" style="top:-10px;right:70px;transform:rotate(6deg);"></div>
+      <span class="eyebrow">Chapter 02</span>
+      <h2 class="chapter-title">Once Upon a Time</h2>
+      <div style="display:flex; gap:34px; flex-wrap:wrap; align-items:flex-start;">
+        <div class="lede" style="flex:1 1 320px;">
+          <p>Once upon a time, there was a girl called Shruti.</p>
+          <p>At first, that's all I knew you as.</p>
+          <p>This quiet little "nerd" who somehow ended up in our lives.</p>
+          <p>And little did I know that behind that name was someone so delicate, precious, caring, and beautiful.</p>
+          <p>I didn't know then that you would become one of those people whose absence would actually be felt.</p>
+          <p>I didn't know that one day, "Shruti" would become "Tissue."</p>
+          <p>And I definitely didn't know that Tissue would become family.</p>
+          <p>I definitely didn't know how hard you'd work, quietly, for everyone else in this family before you ever worked for yourself. Or how much of what holds the five of us together, we owe to you without ever really saying so.</p>
+          <p>Here's the honest part: I went looking for a photo from the very beginning, from whenever this actually started, and there isn't one. We just weren't the kind of people who thought to save it &mdash; we were too busy living it to photograph it.</p>
+          <p>So the photo below isn't from the start. It's from much later, near the end of our college days. It's not even the oldest photo we have of us &mdash; but it's the one that best captures how it felt, and it still somehow looks like the beginning of something &mdash; two people who'd already quietly decided this was going to last.</p>
+        </div>
+        <figure class="polaroid taped tape-sky" style="transform:rotate(-4deg); flex:0 0 auto;" data-lightbox>
+          <div class="frame"><img src="images/early-selfie.jpg" alt="A selfie together, one of the earliest photos we have of us" style="width:100%;height:100%;object-fit:cover;"></div>
+          <figcaption>the one that feels like a "first"</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- ============ PAGE 3 : CH.03 HOW YOU BECAME TISSUE ============ -->
+    <section class="page" data-index="3">
+      <div class="washi washi-sky" style="top:-10px;left:50%;transform:translateX(-50%) rotate(-3deg);"></div>
+      <span class="eyebrow">Chapter 03</span>
+      <h2 class="chapter-title">How You Became Tissue</h2>
+      <div style="display:flex; gap:34px; flex-wrap:wrap; align-items:flex-start;">
+        <div class="lede" style="flex:1 1 320px;">
+          <p>Maybe "Tissue" was always the perfect name for you.</p>
+          <p>A tissue is delicate. Soft. Gentle in a way that asks to be handled with care.</p>
+          <p>But it is also something we instinctively reach for when we need comfort, care, or simply something to wipe away a tear.</p>
+          <p>And somehow, you have been that for all of us.</p>
+          <p>You may be delicate at heart, but there is so much strength, warmth, and love in you.</p>
+          <p>You have this strange way of being <em>soft without being weak.</em></p>
+          <p>And I think that's one of the things I love most about you.</p>
+          <p>Even the way you talk gives it away &mdash; your andaaz, that very specific, very-you way of saying things, half-serious and half not, that nobody else could copy even if they tried. It's one of those small things that somehow says everything about who you are.</p>
+          <p>Those flowers you're smiling under were growing on our own college campus &mdash; which, honestly, might be the only reason we owe that place any gratitude at all. Assignments, deadlines, exams we didn't study for &mdash; none of that we miss. But college gave us you, and for that alone, we'd go back and sit through all of it again.</p>
+        </div>
+        <figure class="polaroid" style="transform:rotate(4deg); flex:0 0 auto;" data-lightbox>
+          <div class="frame"><img src="images/white-flowers.jpg" alt="Tissue smiling gently in front of white flowers on campus" style="width:100%;height:100%;object-fit:cover;"></div>
+          <figcaption>the one good thing college gave us</figcaption>
+        </figure>
+      </div>
+      <div class="corner-heart">🤍</div>
+    </section>
+
+    <!-- ============ PAGE 4 : CH.04 THINGS YOU DON'T REALISE ============ -->
+    <section class="page" data-index="4">
+      <span class="eyebrow">Chapter 04</span>
+      <h2 class="chapter-title">Things You Don't Realise About Yourself</h2>
+      <div class="lede">
+        <p>Some things about you are so easy to miss, because you never point them out yourself. So here's a few, written down before we forget to say them out loud &mdash; next to a photo that just feels like you: temple lights behind you, half a smile, completely unposed.</p>
+        <p>Some of these took years to even notice. Some, you never told us outright &mdash; we just slowly understood them, watching you, loving you.</p>
+      </div>
+      <p class="small-note" style="margin-bottom:18px;">(tap each note)</p>
+      <div style="display:flex; flex-wrap:wrap; gap:20px;">
+        <div class="sticky" style="transform:rotate(-4deg); background:var(--mustard);">
+          <div class="peek">You notice when someone isn't okay. <span class="tap-hint">tap to read more</span></div>
+          <div class="full">You notice when someone isn't okay. You worry. You remember little things.</div>
+        </div>
+        <div class="sticky" style="transform:rotate(3deg); background:var(--sky);">
+          <div class="peek">You stand by people&hellip; <span class="tap-hint">tap to read more</span></div>
+          <div class="full">You stand by people even when you have your own battles to fight. You give pieces of yourself so freely.</div>
+        </div>
+        <div class="sticky" style="transform:rotate(-2deg); background:var(--sage);">
+          <div class="peek">You've been through more than your share&hellip; <span class="tap-hint">tap to read more</span></div>
+          <div class="full">You've been through more than your share, more than most of us will ever fully know. And it took you a long time before you let any of us see it. That you eventually trusted us with it &mdash; that's not something we take lightly. It means you consider us safe. We plan on staying that way.</div>
+        </div>
+        <div class="sticky" style="transform:rotate(4deg); background:var(--plum); color:#fdfbf4;">
+          <div class="peek">Uske baat karne ka andaaz&hellip; <span class="tap-hint">tap to read more</span></div>
+          <div class="full">The way you talk is unmistakably, entirely you. Nobody else phrases things quite like you do, and honestly, half the reason we love talking to you is just hearing you talk.</div>
+        </div>
+        <div class="sticky" style="transform:rotate(-5deg); background:var(--teal); color:#fdfbf4;">
+          <div class="peek">You make us laugh without even trying&hellip; <span class="tap-hint">tap to read more</span></div>
+          <div class="full">You'll say the most normal, most innocent sentence, and within three seconds the rest of us have turned it into something else entirely. You never mean to be funny. You just are, constantly, and you rarely even notice why we're laughing.</div>
+        </div>
+        <div class="sticky" style="transform:rotate(5deg); background:var(--rose);">
+          <div class="peek">If you ever forget how precious you are&hellip; <span class="tap-hint">tap to read more</span></div>
+          <div class="full">If you ever forget how precious you are, I hope this little scrapbook reminds you.</div>
+        </div>
+        <figure class="polaroid" style="transform:rotate(-3deg);" data-lightbox>
+          <div class="frame" style="width:190px;height:230px;"><img src="images/temple-night.jpg" alt="Tissue standing quietly at a lit-up temple at night" style="width:100%;height:100%;object-fit:cover;"></div>
+          <figcaption>this one just feels like you</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- ============ PAGE 5 : CH.05 THE EVIDENCE ============ -->
+    <section class="page" data-index="5">
+      <span class="eyebrow">Chapter 05</span>
+      <h2 class="chapter-title">The Evidence</h2>
+      <div class="lede">
+        <p>Now for the important part: proof that we have actually spent an unreasonable amount of time together.</p>
+        <p>Half of these exist because you said something completely innocent, and within three seconds we'd already turned it into something else &mdash; unintentionally, every single time, and somehow that's exactly what makes these pictures feel like us.</p>
+        <p>There's the cheek kiss caught mid-laugh under a rainbow flare that neither of us planned &mdash; the kind of accidental beauty you couldn't recreate if you tried. There's the one in office clothes, all crisp collars and zero professionalism, because apparently even work clothes couldn't make us behave.</p>
+        <p>And then there's the one that isn't even really a group photo. That's just you, caught candidly in the frame while my girlfriend and I were mid-kiss right beside you &mdash; and you're looking over at us with the most done, most unimpressed expression a camera has ever caught by accident. Nobody asked you to pose. Nobody planned it. It's just you, existing in our chaos, completely unbothered and mildly judging us, and somehow it's become one of our favourite photos we own.</p>
+        <p>There's you fixing your hair mid-getting-ready, not even pretending to notice the camera. There's the most focused I have ever seen you look at anything in your life, and it was over frosting on a cake. And there's the rickshaw ride, twice over &mdash; once mid-sentence, mid-thought, still talking about whatever nonsense we were talking about, and once a few minutes later when we finally remembered to look at the camera and actually smile.</p>
+        <p>Every picture here carries a tiny piece of our story. Some are beautiful. Some are embarrassing. Some should probably never see daylight again.</p>
+        <p><em>But all of them are ours. And honestly, I wouldn't trade any of them.</em></p>
+      </div>
+      <div style="display:flex; flex-wrap:wrap; gap:26px; margin-top:28px; justify-content:center;">
+        <figure class="polaroid" style="transform:rotate(-6deg);" data-lightbox>
+          <div class="frame"><img src="images/rainbow-kiss.jpg" alt="A cheek kiss caught mid-laugh with a rainbow light flare" style="width:100%;height:100%;object-fit:cover;"></div>
+          <figcaption>unplanned, unforgettable</figcaption>
+        </figure>
+        <figure class="polaroid" style="transform:rotate(4deg);" data-lightbox>
+          <div class="frame"><img src="images/office-kiss.jpg" alt="A silly kissy-face pose in office clothes" style="width:100%;height:100%;object-fit:cover;"></div>
+          <figcaption>still not sorry</figcaption>
+        </figure>
+        <figure class="polaroid" style="transform:rotate(-2deg);" data-lightbox>
+          <div class="frame"><img src="images/orange-curtain-three.jpg" alt="Tissue caught candidly looking over, unimpressed, while two friends kiss beside her" style="width:100%;height:100%;object-fit:cover;"></div>
+          <figcaption>caught unimpressed with us</figcaption>
+        </figure>
+        <figure class="polaroid" style="transform:rotate(6deg);" data-lightbox>
+          <div class="frame"><img src="images/bindi-closeup.jpg" alt="A candid close-up caught off guard" style="width:100%;height:100%;object-fit:cover;"></div>
+          <figcaption>not posed, just you</figcaption>
+        </figure>
+        <figure class="polaroid" style="transform:rotate(-4deg);" data-lightbox>
+          <div class="frame"><img src="images/cutting-cake.jpg" alt="Extremely focused cake-decorating in progress" style="width:100%;height:100%;object-fit:cover;"></div>
+          <figcaption>so serious about frosting</figcaption>
+        </figure>
+        <figure class="polaroid" style="transform:rotate(3deg);" data-lightbox>
+          <div class="frame"><img src="images/rickshaw-pucker.jpg" alt="A candid moment in a rickshaw, mid-conversation" style="width:100%;height:100%;object-fit:cover;"></div>
+          <figcaption>still talking, mid-thought</figcaption>
+        </figure>
+        <figure class="polaroid" style="transform:rotate(-5deg);" data-lightbox>
+          <div class="frame"><img src="images/rickshaw-cheek.jpg" alt="The same rickshaw ride, a few minutes later, both smiling" style="width:100%;height:100%;object-fit:cover;"></div>
+          <figcaption>finally, a real smile</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- ============ PAGE 6 : CH.06 OUR LITTLE LORE ============ -->
+    <section class="page" data-index="6">
+      <span class="eyebrow">Chapter 06</span>
+      <h2 class="chapter-title">Our Little Lore</h2>
+      <div class="lede">
+        <p>There are some things that simply cannot be explained.</p>
+        <p>The jokes that started from nowhere. The conversations that should never be repeated. The incidents that became legends. The things that only make sense because we were there.</p>
+        <p>This is our little collection of chaos &mdash; the nonsense, the "remember when&hellip;" moments, the private language we built without ever meaning to.</p>
+        <p>The kind of memories that don't look important while they're happening, but somehow become the ones you miss the most.</p>
+        <p>And honestly, so much of our lore exists because of you specifically &mdash; your andaaz, that very particular, very-you way of saying things. You'll say something completely innocent, and within seconds the rest of us have turned it into something else entirely. You never mean to be funny. You just are, constantly, effortlessly, and half the time you don't even realise what you've just said until we're already crying laughing.</p>
+        <p>Take the candid on the left &mdash; half-caught, slightly overexposed, completely unplanned. It shows up in our group chat almost every month, no caption, no context needed, just this exact face, and somehow it never stops being funny. None of us even remember who took it anymore. We just know it's yours, and it belongs to all of us now.</p>
+        <p>And the one on the right is from a night that had absolutely nothing riding on it &mdash; pajamas, peace signs, a bed that definitely wasn't meant to be jumped on. Nothing about it was planned or important. And yet it's one of the photos we go back to the most, because it's just so completely, unguardedly you.</p>
+      </div>
+      <div style="display:flex; flex-wrap:wrap; gap:20px; margin-top:22px;">
+        <figure class="polaroid" style="transform:rotate(2deg);" data-lightbox>
+          <div class="frame" style="width:170px;height:170px;"><img src="images/orange-curtain-solo.jpg" alt="A candid, slightly filtered close-up that lives rent-free in the group chat" style="width:100%;height:100%;object-fit:cover;"></div>
+          <figcaption>rent-free, no context</figcaption>
+        </figure>
+        <figure class="polaroid" style="transform:rotate(-4deg);" data-lightbox>
+          <div class="frame"><img src="images/pajama-peace-signs.jpg" alt="Two of us in pajamas, mid-jump, throwing peace signs on a bed" style="width:100%;height:100%;object-fit:cover;"></div>
+          <figcaption>a nothing night, a favourite photo</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- ============ PAGE 7 : CH.07 THE DAY TISSUE CHOSE VIOLENCE ============ -->
+    <section class="page" data-index="7">
+      <div class="washi washi-coral" style="top:-10px;left:30px;transform:rotate(-9deg);"></div>
+      <div class="washi washi-teal" style="top:-8px;right:40px;transform:rotate(10deg);"></div>
+      <span class="eyebrow">Chapter 07</span>
+      <h2 class="chapter-title">The Day Tissue Chose Violence</h2>
+      <div class="lede">
+        <p>Of all the things I expected our last day of college to be&hellip;</p>
+        <p><strong>Tissue asking us to teach her cuss words was NOT on the list.</strong></p>
+        <p>See, Tissue had always been the innocent one. She somehow understood every double-meaning joke we made. She knew exactly what we were talking about. She just&hellip; never participated.</p>
+        <p>She would sit there, understand everything, and somehow still maintain her innocent little face.</p>
+        <p>Or so we thought.</p>
+        <p>Because on our last day of college, something happened. Tissue looked at us and basically said:</p>
+        <p class="script" style="font-size:1.6rem;">"Teach me some cuss words."</p>
+        <p>And we were like&mdash; <strong>EXCUSE ME? Who are you? What have you done with our Tissue?</strong></p>
+        <p>And apparently, learning a few cuss words wasn't enough. She wanted to know what they meant. So there we were, on the LAST DAY OF COLLEGE, looking up meanings together.</p>
+        <p>And watching Tissue say those words with that completely innocent face was genuinely one of the funniest things I've ever witnessed. It was like watching a very polite person discover an entirely new language.</p>
+        <p>And because apparently normal cuss words weren't creative enough&hellip; we invented our own.</p>
+      </div>
+      <div class="sticker">Brosdk</div>
+      <div class="lede">
+        <p>A completely unnecessary contribution to the Hindi-English swear-word dictionary. And somehow, Tissue participated. Our innocent Tissue. On the last day of college.</p>
+        <p><strong>Character development: 100/10.</strong></p>
+        <p>Maybe that's why I remember that day so fondly. It wasn't just funny — it felt like we got to see a slightly different version of you. The version that was comfortable enough to be ridiculous with us.</p>
+        <p>And honestly, that day wasn't even an exception. It happens more than you know &mdash; you say something completely innocent, and within seconds, we've turned it into something else. You never see it coming. That's what makes it funnier every single time.</p>
+        <p>And honestly, I hope we never stop being the kind of people who can bring that version of you out.</p>
+      </div>
+      <p class="small-note" style="margin-top:16px;">P.S. We are absolutely never letting you forget this.</p>
+    </section>
+
+    <!-- ============ PAGE 8 : CH.08 SOMEWHERE ALONG THE WAY ============ -->
+    <section class="page" data-index="8">
+      <span class="eyebrow">Chapter 08</span>
+      <h2 class="chapter-title">Somewhere Along the Way</h2>
+      <div style="display:flex; gap:34px; flex-wrap:wrap-reverse; align-items:flex-start;">
+        <div style="display:flex; flex-direction:column; gap:20px;">
+          <figure class="polaroid" style="transform:rotate(5deg);" data-lightbox>
+            <div class="frame"><img src="images/cozy-cheek.jpg" alt="Two of us cheek to cheek, cozy and close" style="width:100%;height:100%;object-fit:cover;"></div>
+            <figcaption>meri beti</figcaption>
+          </figure>
+          <figure class="polaroid" style="transform:rotate(-4deg);" data-lightbox>
+            <div class="frame"><img src="images/cheek-pinch-cafe.jpg" alt="One of us playfully pinching the other's cheek in a cafe" style="width:100%;height:100%;object-fit:cover;"></div>
+            <figcaption>the younger-sibling move</figcaption>
+          </figure>
+        </div>
+        <div class="lede" style="flex:1 1 320px;">
+          <p>Somewhere along the way, you stopped being just a friend.</p>
+          <p style="font-size:1.6rem;" class="script">You became family.</p>
+          <p style="font-size:1.8rem;" class="script">Meri beti. Our eldest daughter.</p>
+          <p>We're a family of five now, technically speaking &mdash; five friends who somehow started functioning like something closer to family, complete with roles nobody assigned but everybody fell into anyway. And you became the eldest daughter of the lot of us, whether you asked for the title or not.</p>
+          <p>It suits you, honestly. You worry about everyone before you worry about yourself. You show up before anyone even has to ask. You hold things together quietly, without ever making it about you, the way the eldest always somehow ends up doing.</p>
+          <p>The one we love, worry about, tease, protect, and cherish more than you probably realise.</p>
+          <p>You lean in without even thinking about it now &mdash; cheek to cheek, like it's nothing, like it's always been like this. And you still can't resist the universal younger-sibling move: pinch the cheeks, call it love.</p>
+          <p>You came into our lives unexpectedly. But today, it is impossible to imagine our family of five without its eldest daughter.</p>
+          <p>Funny how some people arrive without warning and then quietly become permanent.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ PAGE 9 : CH.09 IF I COULD GIVE YOU ANYTHING ============ -->
+    <section class="page" data-index="9">
+      <span class="eyebrow">Chapter 09</span>
+      <h2 class="chapter-title">If I Could Give You Anything</h2>
+      <div class="lede">
+        <p>If I could give you anything for your birthday, I don't think it would be something I could wrap in paper.</p>
+      </div>
+      <div style="display:flex; gap:34px; flex-wrap:wrap; align-items:flex-start;">
+        <ul class="gift-list" style="flex:1 1 320px;">
+          <li>I'd give you <strong>rest</strong> &mdash; real rest, the kind you rarely give yourself, because you're always too busy working hard for everyone else first.</li>
+          <li>I'd give you <strong>peace</strong> &mdash; the kind that makes your heart feel light.</li>
+          <li>I'd give you <strong>happiness</strong> that doesn't need an explanation.</li>
+          <li>I'd give you <strong>people</strong> who love you gently and protect your heart as fiercely as you protect theirs.</li>
+          <li>I'd give you <strong>days</strong> that don't ask too much of you.</li>
+          <li>I'd give you the ease of knowing you don't have to carry everything alone anymore &mdash; you have a family of five for that now.</li>
+          <li>And I'd give you the ability to see yourself the way the people who love you see you.</li>
+        </ul>
+        <figure class="polaroid" style="transform:rotate(-4deg); flex:0 0 auto;" data-lightbox>
+          <div class="frame"><img src="images/floral-doorway.jpg" alt="Tissue dressed up, standing beside pink flowers" style="width:100%;height:100%;object-fit:cover;"></div>
+          <figcaption>this is how we see you</figcaption>
+        </figure>
+      </div>
+      <p class="lede" style="margin-top:18px;">That's you on the right, dressed up and glowing &mdash; and honestly, that's exactly the way we hope you learn to see yourself. Not just on the days you're dressed up for it. Every day.</p>
+      <p class="script" style="font-size:1.9rem; margin-top:26px; color:var(--rose-deep);">Precious. Beautiful. Strong. Soft. Loved.</p>
+    </section>
+
+    <!-- ============ PAGE 10 : CH.10 A LETTER TO MY TISSUE ============ -->
+    <section class="page" data-index="10">
+      <span class="eyebrow">Chapter 10</span>
+      <h2 class="chapter-title">A Letter to My Tissue</h2>
+      <p class="small-note">(click the envelope)</p>
+      <div class="envelope-wrap">
+        <div class="envelope" id="envelope">
+          <div class="body"></div>
+          <div class="flap"></div>
+          <div class="seal">❤</div>
+          <div class="label">tap to open</div>
+        </div>
+      </div>
+      <div class="letter" id="letterBox">
+        <p class="greet">Happy birthday, meri pyaari Tissue. ❤️</p>
+        <p>I hope life becomes gentler with you.</p>
+        <p>I hope the years ahead bring you the peace you deserve, the happiness you have earned, and people who make you feel as cared for as you make everyone else feel.</p>
+        <p>I know some of what you've carried wasn't easy to hand over to us, and it took time before you did. Thank you for trusting us with it. We know it wasn't small, and we don't take it lightly.</p>
+        <p>You work so hard, for so many people, and I hope somewhere in all of that you remember to be a little hardworking for yourself too &mdash; your own peace, your own rest, your own happiness.</p>
+        <p>I hope you never forget how precious you are to us.</p>
+        <p>Keep your beautiful heart. Keep being you &mdash; andaaz and all, the comedy you don't even know you're doing, all of it.</p>
+        <p>And please remember that no matter how unexpectedly you came into our lives, you are very much a part of our family now &mdash; our family of five, and its eldest daughter.</p>
+        <p>I love you more than words can ever properly say.</p>
+        <p>And yes&hellip; even if I forgot the date, I could never forget what you mean to us.</p>
+      </div>
+    </section>
+
+    <!-- ============ PAGE 11 : CH.11 THE LAST PAGE ============ -->
+    <section class="page" data-index="11">
+      <span class="eyebrow">Chapter 11</span>
+      <h2 class="chapter-title">The Last Page</h2>
+      <div class="lede">
+        <p>So, Tissue&hellip;</p>
+        <p>You may have entered our lives unexpectedly.</p>
+        <p>But somewhere between the laughter, the chaos, the stupid conversations, the difficult days, and everything in between&mdash;</p>
+      </div>
+      <div style="display:flex; justify-content:center; margin:20px 0;">
+        <figure class="polaroid" style="transform:rotate(-2deg);" data-lightbox>
+          <div class="frame"><img src="images/cake-candles.jpg" alt="Candlelight on a birthday cake, just before the wish" style="width:100%;height:100%;object-fit:cover;"></div>
+          <figcaption>right before the wish</figcaption>
+        </figure>
+      </div>
+      <div class="lede">
+        <p>That's the quiet second above, before the wish, before the noise &mdash; just candlelight, right before everything got loud again.</p>
+        <p class="tw-target script" data-text="you became home." style="font-size:2.1rem; color:var(--rose-deep);"></p>
+        <p>And homes aren't forgotten.</p>
+        <p>Dates might be. People aren't. Eldest daughters, especially, aren't.</p>
+        <p class="script" style="font-size:1.8rem;">Happy birthday, meri pyaari Tissue. ❤️</p>
+        <p>I am sorry I was late.</p>
+        <p>But I hope this little scrapbook reminds you that you are loved long after your birthday ends.</p>
+        <p class="small-note">&mdash; from someone who is very, very sorry and very, very lucky to have you.</p>
+      </div>
+    </section>
+
+    <!-- ============ PAGE 12 : BONUS HIDDEN PAGE ============ -->
+    <section class="page" data-index="12">
+      <span class="eyebrow">Bonus &mdash; The Hidden Page</span>
+      <h2 class="chapter-title">Wait. You Thought That Was It?</h2>
+      <div class="lede">
+        <p>No. One last thing.</p>
+        <p>This scrapbook is only one person's version of how much you mean to us. So here's a little collection of messages from the rest of your family of five &mdash; the people who love our eldest daughter too.</p>
+      </div>
+      <div class="testimony-card">
+        <span class="who">when we asked the group why we love Tissue so much, this is what came back</span>
+        <ol class="testimony-list">
+          <li>She is the purest soul we know.</li>
+          <li>She is so kind.</li>
+          <li>She is so humble and honest.</li>
+          <li>She is so unbothered by what people do around her.</li>
+          <li>When she makes friendships, she truly puts her heart and soul into keeping them &mdash; unlike us, who forgot her day.</li>
+          <li class="callback">She truly and wholeheartedly is our true friend, and that's exactly why she's so hurt today because of us.</li>
+          <li>She is a giver. She'll go that extra length to help you.</li>
+        </ol>
+      </div>
+      <div class="lede" style="margin-top:18px;">
+        <p>And if there's one more thing every single one of us agrees on, spoken or unspoken: you've carried more than any one of us fully knows, and it took you a long time before you let any of us see it.</p>
+        <p>That you trusted us enough to let us in &mdash; that means something we don't take lightly, eldest daughter. We're grateful, more than this little scrapbook could ever really say.</p>
+        <p>And below is us &mdash; the whole family, in the wild, the way we hope to always be. Close, loud, cheek to cheek, and completely, unfixably ourselves.</p>
+      </div>
+      <div style="display:flex; flex-wrap:wrap; gap:26px; margin-top:22px; justify-content:center;">
+        <figure class="polaroid taped tape-rose" style="transform:rotate(-3deg);" data-lightbox>
+          <div class="frame" style="width:260px;height:200px;"><img src="images/three-girls.jpg" alt="The three of us, cheek to cheek, laughing" style="width:100%;height:100%;object-fit:cover;"></div>
+          <figcaption>close, loud, ourselves</figcaption>
+        </figure>
+        <figure class="polaroid" style="transform:rotate(3deg);" data-lightbox>
+          <div class="frame" style="width:260px;height:200px;"><img src="images/family-group-stairs.jpg" alt="The whole group piled together on a staircase, peace signs and grins" style="width:100%;height:100%;object-fit:cover;"></div>
+          <figcaption>the whole crew, one frame</figcaption>
+        </figure>
+        <figure class="polaroid" style="transform:rotate(-2deg);" data-lightbox>
+          <div class="frame" style="width:200px;height:260px;"><img src="images/family-group-neon.jpg" alt="The group huddled in for a selfie under a neon sign" style="width:100%;height:100%;object-fit:cover;"></div>
+          <figcaption>every one of us, all in</figcaption>
+        </figure>
+      </div>
+      <p class="script" style="text-align:center; font-size:1.7rem; margin-top:24px;">Happy birthday, Tissue. You are loved. More than you know.</p>
+    </section>
+
+  </div>
+</div>
+
+<!-- lightbox -->
+<div class="lightbox" id="lightbox">
+  <figure class="polaroid" id="lightboxContent">
+    <div class="frame ph-inner"><p>tap outside to close</p></div>
+  </figure>
+</div>
+
+<!-- nav controls -->
+<div class="controls">
+  <button class="nav-btn" id="prevBtn" aria-label="previous page">‹</button>
+  <div class="dots" id="dots"></div>
+  <button class="nav-btn" id="nextBtn" aria-label="next page">›</button>
+</div>
+
+<script>
+(function(){
+  const pages = Array.from(document.querySelectorAll('.page'));
+  const total = pages.length;
+  let current = 0;
+
+  pages.forEach((p) => {
+    const idx = Number(p.dataset.index);
+    if (idx === 0) return;
+    const num = document.createElement('span');
+    num.className = 'page-num';
+    num.textContent = String(idx).padStart(2,'0') + ' / ' + String(total - 1).padStart(2,'0');
+    p.appendChild(num);
+  });
+  const dotsWrap = document.getElementById('dots');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+
+  pages.forEach((_, i) => {
+    const d = document.createElement('button');
+    d.className = 'dot' + (i === 0 ? ' active' : '');
+    d.setAttribute('aria-label', 'go to page ' + (i+1));
+    d.addEventListener('click', () => goTo(i));
+    dotsWrap.appendChild(d);
+  });
+  const dots = Array.from(dotsWrap.children);
+
+  function updateDots(){
+    dots.forEach((d,i) => d.classList.toggle('active', i === current));
+    prevBtn.disabled = current === 0;
+    nextBtn.disabled = current === total - 1;
+  }
+
+  function typeOnPage(page){
+    const targets = page.querySelectorAll('.tw-target');
+    targets.forEach(el => {
+      if (el.dataset.typed) return;
+      el.dataset.typed = 'true';
+      const text = el.dataset.text || '';
+      el.textContent = '';
+      el.classList.add('tw');
+      let i = 0;
+      const speed = 38;
+      function step(){
+        if (i <= text.length){
+          el.textContent = text.slice(0, i);
+          i++;
+          setTimeout(step, speed);
+        } else {
+          el.classList.add('done');
+        }
+      }
+      step();
+    });
+  }
+
+  function fireConfetti(){
+    const colors = ['#e0637f','#f0ac1f','#5fa06a','#3f9fcf','#c23d5c','#f0704a','#9757b0','#2f9e93'];
+    for (let i = 0; i < 60; i++){
+      const p = document.createElement('div');
+      p.className = 'confetti-piece';
+      const size = 6 + Math.random()*6;
+      p.style.left = Math.random()*100 + 'vw';
+      p.style.width = size + 'px';
+      p.style.height = (size*0.4) + 'px';
+      p.style.background = colors[Math.floor(Math.random()*colors.length)];
+      p.style.animationDuration = (2.2 + Math.random()*1.8) + 's';
+      p.style.opacity = 0.85;
+      document.body.appendChild(p);
+      setTimeout(() => p.remove(), 4200);
+    }
+  }
+
+  function goTo(index, dir){
+    if (index < 0 || index >= total || index === current) return;
+    const outgoing = pages[current];
+    const incoming = pages[index];
+    const direction = dir || (index > current ? 'next' : 'prev');
+
+    outgoing.classList.add(direction === 'next' ? 'leaving-next' : 'leaving-prev');
+    setTimeout(() => {
+      outgoing.classList.remove('active','leaving-next','leaving-prev');
+      incoming.classList.add('active', direction === 'next' ? 'entering-next' : 'entering-prev');
+      setTimeout(() => {
+        incoming.classList.remove('entering-next','entering-prev');
+        typeOnPage(incoming);
+        if (incoming.dataset.index === '11') fireConfetti();
+      }, 480);
+    }, 420);
+
+    current = index;
+    updateDots();
+  }
+
+  prevBtn.addEventListener('click', () => goTo(current - 1, 'prev'));
+  nextBtn.addEventListener('click', () => goTo(current + 1, 'next'));
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight') goTo(current + 1, 'next');
+    if (e.key === 'ArrowLeft') goTo(current - 1, 'prev');
+  });
+
+  document.getElementById('openBookBtn').addEventListener('click', () => goTo(1, 'next'));
+
+  // sticky notes
+  document.querySelectorAll('.sticky').forEach(s => {
+    s.addEventListener('click', () => s.classList.toggle('open'));
+  });
+
+  // envelope
+  const envelope = document.getElementById('envelope');
+  const letterBox = document.getElementById('letterBox');
+  envelope.addEventListener('click', () => {
+    envelope.classList.toggle('open');
+    if (envelope.classList.contains('open')){
+      setTimeout(() => {
+        letterBox.classList.add('show');
+        const greet = letterBox.querySelector('.greet');
+        if (!greet.dataset.typed){
+          greet.dataset.typed = 'true';
+          const full = greet.textContent;
+          greet.textContent = '';
+          let i = 0;
+          (function step(){
+            if (i <= full.length){ greet.textContent = full.slice(0,i); i++; setTimeout(step, 40); }
+          })();
+        }
+      }, 350);
+    }
+  });
+
+  // lightbox
+  const lightbox = document.getElementById('lightbox');
+  const lightboxContent = document.getElementById('lightboxContent');
+  document.querySelectorAll('[data-lightbox]').forEach(p => {
+    p.addEventListener('click', () => {
+      const innerHTML = p.querySelector('.frame').innerHTML;
+      const caption = p.querySelector('figcaption') ? p.querySelector('figcaption').textContent : '';
+      lightboxContent.innerHTML = '<div class="frame ph-inner">' + innerHTML + '</div><figcaption>' + caption + '</figcaption>';
+      lightbox.classList.add('open');
+    });
+  });
+  lightbox.addEventListener('click', () => lightbox.classList.remove('open'));
+
+  // tiny easter egg: click the cover title 3 times
+  let titleClicks = 0;
+  const titleWord = document.getElementById('titleWord');
+  const eggNote = document.getElementById('easterEggNote');
+  titleWord.style.cursor = 'pointer';
+  titleWord.addEventListener('click', () => {
+    titleClicks++;
+    if (titleClicks === 3){
+      eggNote.textContent = 'okay fine — I also just really, really missed you. happy birthday. 🤍';
+      eggNote.style.opacity = '1';
+    } else if (titleClicks > 3) {
+      eggNote.style.opacity = '1';
+    }
+  });
+
+  updateDots();
+})();
+</script>
+</body>
+</html>
